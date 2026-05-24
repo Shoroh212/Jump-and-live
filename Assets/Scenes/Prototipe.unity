@@ -790,6 +790,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 0}
+  spritePlayer: {fileID: 0}
 --- !u!1 &762029227
 GameObject:
   m_ObjectHideFlags: 0

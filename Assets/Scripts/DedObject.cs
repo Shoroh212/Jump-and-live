@@ -92,6 +92,7 @@ public class DedObject : MonoBehaviour
 
      async UniTask EndGame()
     {
+       
         Instantiate(first_destroy);
         await UniTask.Delay(1000);
         Destroy(first_destroy);
