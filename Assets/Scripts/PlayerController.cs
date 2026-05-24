@@ -4,12 +4,15 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UniRx;
+using Cysharp.Threading.Tasks;
 
 public class PlayerController : MonoBehaviour , IPlayerSetings, IMove
 {
     public float speed { get; set; } = 5;
     public float jump { get; set; } = 13;
     public Rigidbody2D rb;
+    [SerializeField] SpriteRenderer spritePlayer;
 
     IInput input;
 
@@ -20,6 +23,11 @@ public class PlayerController : MonoBehaviour , IPlayerSetings, IMove
 
     }
 
+    void Start()
+    {
+        spritePlayer = GetComponent<SpriteRenderer>();
+    }
+   
 
     public void LateUpdate()
     {
@@ -34,6 +42,7 @@ public class PlayerController : MonoBehaviour , IPlayerSetings, IMove
        rb.velocity = new Vector2(x * speed, rb.velocity.y);
      
     }
+
    
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -49,9 +58,15 @@ public class PlayerController : MonoBehaviour , IPlayerSetings, IMove
             SceneManager.LoadScene(0);
             
         }
+
+        if (collision.collider.CompareTag("DedObject"))
+        {
+           spritePlayer.enabled = false;
+
+        }
     }
 
-
+    
 }
 
 
