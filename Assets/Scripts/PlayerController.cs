@@ -40,10 +40,16 @@ public class PlayerController : MonoBehaviour , IPlayerSetings, IMove
       
        // Vector3 movement = new Vector3(x * speed, rb.velocity.y, 0);
        rb.velocity = new Vector2(x * speed, rb.velocity.y);
-     
+
     }
 
-   
+
+    private async UniTaskVoid TaskVoid()
+    {
+        await UniTask.Delay(1200);
+        SceneManager.LoadScene(1);
+
+    }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -62,6 +68,7 @@ public class PlayerController : MonoBehaviour , IPlayerSetings, IMove
         if (collision.collider.CompareTag("DedObject"))
         {
            spritePlayer.enabled = false;
+            TaskVoid();
 
         }
     }

@@ -1,114 +1,100 @@
-
 using Cysharp.Threading.Tasks;
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-
 public class DedObject : MonoBehaviour
 {
-
+    [Header("Movement")]
     [SerializeField] private float speed = 2f;
-    [SerializeField] private Sprite first_sprite;
-    [SerializeField] private Sprite second_sprite;
-    [SerializeField] private Sprite defolt;
-    Vector3 startpos;
-    private bool moveHorizontal = true;
+    [SerializeField] private float moveDistance = 3f;
 
-    [SerializeField] private GameObject first_destroy;
-    [SerializeField] private GameObject second_destroy;
+    [Header("Sprites")]
+    [SerializeField] private Sprite defaultSprite;
+    [SerializeField] private Sprite animationSprite;
 
+    [Header("Effects")]
+    [SerializeField] private GameObject firstDestroy;
+    [SerializeField] private GameObject secondDestroy;
 
-    SpriteRenderer spriteRenderer;
+    private SpriteRenderer spriteRenderer;
 
-  
+    private Vector3 startPosition;
+    private float movementTime;
+    private bool isPaused;
 
     private void Start()
     {
-        startpos = transform.position;
+        startPosition = transform.position;
         spriteRenderer = GetComponent<SpriteRenderer>();
 
-        EnemyLoop().Forget();
-        Animation();
-        StopAnimation().Forget();
+        MoveLoop().Forget();
+      //  AnimationLoop().Forget();
 
-        this.OnTriggerEnter2DAsObservable().Where(collision => collision.CompareTag("Player"))
-           .Subscribe(_ => EndGame())
-           .AddTo(this);
-
+        this.OnTriggerEnter2DAsObservable()
+            .Where(collision => collision.CompareTag("Player"))
+            .Subscribe(_ => EndGame().Forget())
+            .AddTo(this);
     }
 
-
-    private async UniTaskVoid EnemyLoop()
+    private async UniTaskVoid MoveLoop()
     {
         while (true)
         {
-            if (moveHorizontal)
+            if (!isPaused)
             {
-                spriteRenderer.sprite = defolt;
-                Vector3 horizontal =
-                    transform.right *
-                    Mathf.PingPong(Time.time * speed, 3);
+                movementTime += Time.deltaTime;
 
-                transform.position = startpos + horizontal;
-            }
-            else
-            {
-                Vector3 vertical =
-                    transform.up *
-                    Mathf.PingPong(Time.time * 2.5f, 0.5f);
+                float x = Mathf.PingPong(movementTime * speed, moveDistance);
 
-                transform.position = startpos +  vertical;
+                transform.position = startPosition + Vector3.right * x;
             }
 
             await UniTask.Yield();
         }
     }
 
-    private async UniTask Animation()
+    /*
+    private async UniTaskVoid AnimationLoop()
     {
-        await UniTask.Delay(11800);
-        moveHorizontal = false;
-        spriteRenderer.sprite = first_sprite;
-        
+        while (true)
+        {
+            await UniTask.Delay(12000);
 
+            isPaused = true;
+            spriteRenderer.sprite = animationSprite;
 
+            // Здесь можно запускать Animator
+            // animator.SetTrigger("Attack");
 
+            await UniTask.Delay(3000);
 
-
+            spriteRenderer.sprite = defaultSprite;
+            isPaused = false;
+        }
     }
+    */
 
-    private async UniTask StopAnimation()
+    private async UniTaskVoid EndGame()
     {
-        await UniTask.Delay(23600);
-        moveHorizontal = true;
-        spriteRenderer.sprite = defolt;
-    }
+        GameObject first = Instantiate(firstDestroy, transform.position, Quaternion.identity);
 
-
-
-
-
-     async UniTask EndGame()
-    {
-       
-        Instantiate(first_destroy);
         await UniTask.Delay(1000);
-        Destroy(first_destroy);
-        Instantiate(second_destroy);
+
+        Destroy(first);
+
+        GameObject second = Instantiate(secondDestroy, transform.position, Quaternion.identity);
+
         await UniTask.Delay(1000);
-        Destroy(second_destroy) ;
 
+        Destroy(second);
 
-
-        await UniTask.Delay(2000);  
+        await UniTask.Delay(2000);
 
         SceneManager.LoadScene(0);
-        
     }
 }
-
 
 /*
  * 
