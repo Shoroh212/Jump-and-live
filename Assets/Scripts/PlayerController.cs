@@ -7,12 +7,16 @@ using UnityEngine.SceneManagement;
 using UniRx;
 using Cysharp.Threading.Tasks;
 
-public class PlayerController : MonoBehaviour , IPlayerSetings, IMove
+public class PlayerController : MonoBehaviour, IPlayerSetings, IMove
 {
     public float speed { get; set; } = 5;
     public float jump { get; set; } = 13;
+
     public Rigidbody2D rb;
-    [SerializeField] SpriteRenderer spritePlayer;
+
+    [SerializeField] private SpriteRenderer spritePlayer;
+    [SerializeField] private Sprite normalSprite; // вверх
+    [SerializeField] private Sprite fallSprite;   // вниз
 
     IInput input;
 
@@ -20,35 +24,55 @@ public class PlayerController : MonoBehaviour , IPlayerSetings, IMove
     {
         rb = GetComponent<Rigidbody2D>();
         input = new KeyBordInput();
-
     }
 
     void Start()
     {
         spritePlayer = GetComponent<SpriteRenderer>();
     }
-   
 
     public void LateUpdate()
     {
         float direction = input.Horizontal();
+
         Move(direction);
+        UpdateSprite();
+        FlipSprite(direction);
     }
-    
+
     public void Move(float x)
     {
-      
-       // Vector3 movement = new Vector3(x * speed, rb.velocity.y, 0);
-       rb.velocity = new Vector2(x * speed, rb.velocity.y);
-
+        rb.velocity = new Vector2(x * speed, rb.velocity.y);
     }
 
+    private void UpdateSprite()
+    {
+        if (rb.velocity.y < -0.1f)
+        {
+            spritePlayer.sprite = fallSprite;
+        }
+        else
+        {
+            spritePlayer.sprite = normalSprite;
+        }
+    }
+
+    private void FlipSprite(float direction)
+    {
+        if (direction > 0)
+        {
+            spritePlayer.flipX = false;
+        }
+        else if (direction < 0)
+        {
+            spritePlayer.flipX = true; 
+        }
+    }
 
     private async UniTaskVoid TaskVoid()
     {
         await UniTask.Delay(1200);
         SceneManager.LoadScene(1);
-
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -58,28 +82,18 @@ public class PlayerController : MonoBehaviour , IPlayerSetings, IMove
             Vector3 jum = new Vector3(rb.velocity.x, jump, 0);
             rb.velocity = jum;
         }
-
         else if (collision.collider.CompareTag("Respawn"))
         {
             SceneManager.LoadScene(0);
-            
         }
 
         if (collision.collider.CompareTag("DedObject"))
         {
-           spritePlayer.enabled = false;
+            spritePlayer.enabled = false;
             TaskVoid();
-
         }
     }
-
-    
 }
-
-
-
-
-
 
 class KeyBordInput : IInput
 {
@@ -96,46 +110,11 @@ public interface IInput
 
 public interface IMove
 {
-  void Move(float direction);
+    void Move(float direction);
 }
-
 
 public interface IPlayerSetings
 {
-
-   public float speed { get; set; }
-    public float jump { get; set; }
-   
-
-
-
-
-
-
-
-
+    float speed { get; set; }
+    float jump { get; set; }
 }
-
-
-
-
-
-
-
-/*
- * 
- * 
- * 
- * 
- *  public void Update()
-    {
-        float x = Input.GetAxis("Horizontal");
-        move(x);
-    }
-
- * 
- * 
- * 
- * 
- * 
- */
