@@ -17,6 +17,8 @@ public class PlayerController : MonoBehaviour, IPlayerSetings, IMove
     [SerializeField] private SpriteRenderer spritePlayer;
     [SerializeField] private Sprite normalSprite; // вверх
     [SerializeField] private Sprite fallSprite;   // вниз
+    [SerializeField] private Sprite deathSprite;  // смерть 
+
 
     IInput input;
 
@@ -71,8 +73,7 @@ public class PlayerController : MonoBehaviour, IPlayerSetings, IMove
 
     private async UniTaskVoid TaskVoid()
     {
-        await UniTask.Delay(1200);
-        SceneManager.LoadScene(1);
+      
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -89,7 +90,7 @@ public class PlayerController : MonoBehaviour, IPlayerSetings, IMove
 
         if (collision.collider.CompareTag("DedObject"))
         {
-            spritePlayer.enabled = false;
+           spritePlayer.enabled = false;
             TaskVoid();
         }
     }

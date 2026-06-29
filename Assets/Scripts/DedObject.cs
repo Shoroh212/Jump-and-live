@@ -78,19 +78,20 @@ public class DedObject : MonoBehaviour
 
     private async UniTaskVoid EndGame()
     {
-        GameObject first = Instantiate(firstDestroy, transform.position, Quaternion.identity);
+        spriteRenderer.enabled = false;
+       GameObject first = Instantiate(firstDestroy, transform.position + Vector3.up * 1f, Quaternion.identity);
 
         await UniTask.Delay(1000);
 
         Destroy(first);
 
-        GameObject second = Instantiate(secondDestroy, transform.position, Quaternion.identity);
+        GameObject second = Instantiate(secondDestroy, transform.position + Vector3.up * 1f, Quaternion.identity);
 
         await UniTask.Delay(1000);
 
         Destroy(second);
 
-        await UniTask.Delay(2000);
+       // await UniTask.Delay(6000);
 
         SceneManager.LoadScene(0);
     }
