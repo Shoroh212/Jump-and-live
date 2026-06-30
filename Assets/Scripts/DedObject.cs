@@ -81,13 +81,13 @@ public class DedObject : MonoBehaviour
         spriteRenderer.enabled = false;
        GameObject first = Instantiate(firstDestroy, transform.position + Vector3.up * 1f, Quaternion.identity);
 
-        await UniTask.Delay(1000);
+        await UniTask.Delay(300);
 
         Destroy(first);
 
         GameObject second = Instantiate(secondDestroy, transform.position + Vector3.up * 1f, Quaternion.identity);
 
-        await UniTask.Delay(1000);
+        await UniTask.Delay(300);
 
         Destroy(second);
 

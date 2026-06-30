@@ -1,7 +1,4 @@
-using JetBrains.Annotations;
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
+
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UniRx;
@@ -73,7 +70,11 @@ public class PlayerController : MonoBehaviour, IPlayerSetings, IMove
 
     private async UniTaskVoid TaskVoid()
     {
-      
+        Debug.Log("111s");
+        // spritePlayer.sprite = null;
+        spritePlayer.sprite = deathSprite;
+        rb.AddForce(Vector2.up * 1f, ForceMode2D.Impulse);
+
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -92,6 +93,7 @@ public class PlayerController : MonoBehaviour, IPlayerSetings, IMove
         {
            spritePlayer.enabled = false;
             TaskVoid();
+            Debug.Log("111");
         }
     }
 }
@@ -106,6 +108,7 @@ class KeyBordInput : IInput
 
 public interface IInput
 {
+
     float Horizontal();
 }
 
